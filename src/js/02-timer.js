@@ -5,9 +5,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Notiflix from 'notiflix';
 
 const input = document.querySelector('#datetime-picker');
-const selectTimer = document.querySelector('.timer');
 const btnStart = document.querySelector('button[data-start]');
-const fields = Array.from(document.querySelectorAll('div.field'));
 const seconds = document.querySelector('span[data-seconds]');
 const minutes = document.querySelector('span[data-minutes]');
 const hours = document.querySelector('span[data-hours]');
@@ -27,7 +25,9 @@ const options = {
       Notiflix.Notify.failure('Please choose a date in the future');
       btnStart.disabled = true;
     } else {
-      Notiflix.Notify.success('Everything ok, enjoy!');
+      Notiflix.Notify.success(
+        'Everything ok, click the button start and enjoy!'
+      );
       btnStart.disabled = false;
     }
   },
