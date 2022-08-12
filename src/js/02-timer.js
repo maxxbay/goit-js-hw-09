@@ -4,28 +4,18 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Notiflix from 'notiflix';
 
-
-
 const input = document.querySelector('#datetime-picker');
-const selectTimer = document.querySelector('.timer');
 const btnStart = document.querySelector('button[data-start]');
-const fields = Array.from(document.querySelectorAll('div.field'));
-const seconds = document.querySelector('span[data-seconds]');
-const minutes = document.querySelector('span[data-minutes]');
-const hours = document.querySelector('span[data-hours]');
-const days = document.querySelector('span[data-days]');
+const dataDays = document.querySelector('span[data-days]');
+const dataHours = document.querySelector('span[data-hours]');
+const dataMinutes = document.querySelector('span[data-minutes]');
+const dataSeconds = document.querySelector('span[data-seconds]');
 
-let timerId = null;
-let selectedDay;
+btnStart.disabled = true;
 
-startButton.disabled = true;
-
-
-startButton.addEventListener('click', countdown);
+let selectedDate = null;
 
 // Flatpickr
-
-flatpickr(input, options);
 
 const options = {
   enableTime: true,
@@ -33,9 +23,17 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    if (selectedDates[0].getTime() < options.defaultDate.getTime()) {
+      Notiflix.Notify.failure('Please choose a date in the future');
+      btnStart.disabled = true;
+    } else {
+      btnStart.disabled = false;
+      return (selectedDate = selectedDates[0]);
+    }
   },
 };
+
+flatpickr(input, options);
 
 // Розрахунок дат, годин і тд
 
@@ -57,3 +55,35 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+
+function addLeadingZero(value) {
+  if (value < 10) {
+    return value.toString().padStart(2, '0');
+  } else {
+    return value;
+  }
+}
+// Розрахунок і вивід відліку часу
+
+const getDifference = () => {
+  const todayDate = new Date().getTime();
+  const differences = selectedDate.getTime() - todayDate;
+  let newDay = convertMs(differences).days;
+  dataDays.textContent = addLeadingZero(newDay);
+  let newHour = convertMs(differences).hours;
+  dataHours.textContent = addLeadingZero(newHour);
+  let newMinute = convertMs(differences).minutes;
+  dataMinutes.textContent = addLeadingZero(newMinute);
+  let newSecond = convertMs(differences).seconds;
+  dataSeconds.textContent = addLeadingZero(newSecond);
+
+  if (differences <= 0) {
+    return 0;
+  }
+};
+
+btnStart.addEventListener('click', () => {
+  setInterval(() => {
+    getDifference();
+  }, 1000);
+});
